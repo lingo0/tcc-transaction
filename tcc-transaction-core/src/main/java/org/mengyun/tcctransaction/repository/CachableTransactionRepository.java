@@ -14,12 +14,20 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 增删改查事务时，同时缓存事务信息。
+ *
  * Created by changmingxie on 10/30/15.
  */
 public abstract class CachableTransactionRepository implements TransactionRepository {
 
+    /**
+     * 缓存过期时间
+     */
     private int expireDuration = 120;
 
+    /**
+     * 缓存
+     */
     private Cache<Xid, Transaction> transactionXidCompensableTransactionCache;
 
     @Override
@@ -43,7 +51,7 @@ public abstract class CachableTransactionRepository implements TransactionReposi
                 throw new OptimisticLockException();
             }
         } finally {
-            if (result <= 0) {
+            if (result <= 0) {   // 更新失败，移除缓存。下次访问，从存储器读取
                 removeFromCache(transaction);
             }
         }
@@ -91,6 +99,9 @@ public abstract class CachableTransactionRepository implements TransactionReposi
         return transactions;
     }
 
+    /**
+     * 使用 Guava Cache 内存缓存事务信息，设置最大缓存个数为 1000 个，缓存过期时间为最后访问时间 120 秒。
+     */
     public CachableTransactionRepository() {
         transactionXidCompensableTransactionCache = CacheBuilder.newBuilder().expireAfterAccess(expireDuration, TimeUnit.SECONDS).maximumSize(1000).build();
     }

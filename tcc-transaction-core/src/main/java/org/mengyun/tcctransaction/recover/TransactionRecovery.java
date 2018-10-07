@@ -23,13 +23,19 @@ public class TransactionRecovery {
 
     private TransactionConfigurator transactionConfigurator;
 
+    /**
+     * 启动恢复事务逻辑
+     */
     public void startRecover() {
 
+        // 加载异常事务集合
         List<Transaction> transactions = loadErrorTransactions();
 
+        // 恢复异常事务集合
         recoverErrorTransactions(transactions);
     }
 
+    // 加载异常事务集合
     private List<Transaction> loadErrorTransactions() {
 
 
@@ -38,20 +44,25 @@ public class TransactionRecovery {
         TransactionRepository transactionRepository = transactionConfigurator.getTransactionRepository();
         RecoverConfig recoverConfig = transactionConfigurator.getRecoverConfig();
 
+        // 当前时间超过 - 事务恢复间隔 RecoverConfig#getRecoverDuration()
         return transactionRepository.findAllUnmodifiedSince(new Date(currentTimeInMillis - recoverConfig.getRecoverDuration() * 1000));
     }
 
+    // 恢复异常事务集合
     private void recoverErrorTransactions(List<Transaction> transactions) {
 
 
         for (Transaction transaction : transactions) {
 
+            // 超过最大重试次数
             if (transaction.getRetriedCount() > transactionConfigurator.getRecoverConfig().getMaxRetryCount()) {
 
+                // 当单个事务超过最大重试次数时，不再重试，只打印异常，此时需要人工介入解决。
                 logger.error(String.format("recover failed with max retry count,will not try again. txid:%s, status:%s,retried count:%d,transaction content:%s", transaction.getXid(), transaction.getStatus().getId(), transaction.getRetriedCount(), JSON.toJSONString(transaction)));
                 continue;
             }
 
+            // 分支事务超过最大可重试时间
             if (transaction.getTransactionType().equals(TransactionType.BRANCH)
                     && (transaction.getCreateTime().getTime() +
                     transactionConfigurator.getRecoverConfig().getMaxRetryCount() *
@@ -59,7 +70,8 @@ public class TransactionRecovery {
                     > System.currentTimeMillis())) {
                 continue;
             }
-            
+
+            // Confirm / Cancel
             try {
                 transaction.addRetriedCount();
 
@@ -71,6 +83,7 @@ public class TransactionRecovery {
                     transactionConfigurator.getTransactionRepository().delete(transaction);
 
                 } else if (transaction.getStatus().equals(TransactionStatus.CANCELLING)
+                           // 这里加判断的事务类型为根事务，用于处理延迟回滚异常的事务的回滚。
                         || transaction.getTransactionType().equals(TransactionType.ROOT)) {
 
                     transaction.changeStatus(TransactionStatus.CANCELLING);

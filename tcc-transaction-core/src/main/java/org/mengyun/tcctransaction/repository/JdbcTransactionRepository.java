@@ -3,7 +3,6 @@ package org.mengyun.tcctransaction.repository;
 
 import org.mengyun.tcctransaction.Transaction;
 import org.mengyun.tcctransaction.api.TransactionStatus;
-import org.mengyun.tcctransaction.serializer.JdkSerializationSerializer;
 import org.mengyun.tcctransaction.serializer.KryoPoolSerializer;
 import org.mengyun.tcctransaction.serializer.ObjectSerializer;
 import org.mengyun.tcctransaction.utils.CollectionUtils;
@@ -23,10 +22,16 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
 
     private String domain;
 
+    /**
+     * 表后缀
+     */
     private String tbSuffix;
 
     private DataSource dataSource;
 
+    /**
+     * 序列化,使用了Kryo序列化方式
+     */
     private ObjectSerializer serializer = new KryoPoolSerializer();
 
     public String getDomain() {

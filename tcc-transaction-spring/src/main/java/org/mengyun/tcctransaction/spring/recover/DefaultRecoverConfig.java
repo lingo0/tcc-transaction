@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 默认事务恢复配置实现
  * Created by changming.xie on 6/1/16.
  */
 public class DefaultRecoverConfig implements RecoverConfig {
