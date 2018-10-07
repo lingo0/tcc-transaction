@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ *
  * Created by changming.xie on 2/23/17.
  */
 public final class FactoryBuilder {
@@ -16,8 +17,18 @@ public final class FactoryBuilder {
 
     private static List<BeanFactory> beanFactories = new ArrayList<BeanFactory>();
 
+    /**
+     * 类与 bean 的映射
+     */
     private static ConcurrentHashMap<Class, SingeltonFactory> classFactoryMap = new ConcurrentHashMap<Class, SingeltonFactory>();
 
+    /**
+     * 获得指定类单例工厂
+     *
+     * @param clazz 指定类
+     * @param <T> 泛型
+     * @return 单例工厂
+     */
     public static <T> SingeltonFactory<T> factoryOf(Class<T> clazz) {
 
         if (!classFactoryMap.containsKey(clazz)) {
@@ -36,10 +47,21 @@ public final class FactoryBuilder {
         return classFactoryMap.get(clazz);
     }
 
+    /**
+     * 将 Bean工厂 注册到当前 Builder
+     *
+     * @param beanFactory Bean工厂
+     */
     public static void registerBeanFactory(BeanFactory beanFactory) {
         beanFactories.add(beanFactory);
     }
 
+
+    /**
+     * 单例工厂
+     *
+     * @param <T> 泛型
+     */
     public static class SingeltonFactory<T> {
 
         private volatile T instance = null;
@@ -55,9 +77,14 @@ public final class FactoryBuilder {
             this.className = clazz.getName();
         }
 
+        /**
+         * 获得单例
+         *
+         * @return 单例
+         */
         public T getInstance() {
 
-            if (instance == null) {
+            if (instance == null) {  // 不存在时，创建单例
                 synchronized (SingeltonFactory.class) {
                     if (instance == null) {
                         try {

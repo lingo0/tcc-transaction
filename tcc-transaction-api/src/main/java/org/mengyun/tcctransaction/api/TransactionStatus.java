@@ -1,6 +1,8 @@
 package org.mengyun.tcctransaction.api;
 
 /**
+ * 事务状态
+ * <p>
  * Created by changmingxie on 10/28/15.
  */
 public enum TransactionStatus {
@@ -9,7 +11,7 @@ public enum TransactionStatus {
 
     private int id;
 
-     TransactionStatus(int id) {
+    TransactionStatus(int id) {
         this.id = id;
     }
 

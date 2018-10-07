@@ -10,6 +10,11 @@
         <property name="maxRetryCount" value="30"/>
         <property name="recoverDuration" value="5"/>
         <property name="cronExpression" value="0/5 * * * * ?"/>
+        <!--<property name="delayCancelExceptions">-->
+            <!--<util:set>-->
+                <!--<value>com.alibaba.dubbo.remoting.TimeoutException</value>-->
+            <!--</util:set>-->
+        <!--</property>-->
     </bean>
 
     <bean id="transactionRepository"
