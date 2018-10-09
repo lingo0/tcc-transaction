@@ -72,15 +72,18 @@ public abstract class TccProxy {
      * @return TccProxy instance.
      */
     public static TccProxy getProxy(ClassLoader cl, Class<?>... ics) {
+        // 校验接口超过上限
         if (ics.length > 65535)
             throw new IllegalArgumentException("interface limit exceeded");
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ics.length; i++) {
             String itf = ics[i].getName();
+            // 校验是否为接口
             if (!ics[i].isInterface())
                 throw new RuntimeException(itf + " is not a interface.");
 
+            // 加载接口类
             Class<?> tmp = null;
             try {
                 tmp = Class.forName(itf, false, cl);
@@ -106,6 +109,7 @@ public abstract class TccProxy {
             }
         }
 
+        // 获得 TccProxy
         TccProxy proxy = null;
         synchronized (cache) {
             do {
@@ -116,6 +120,7 @@ public abstract class TccProxy {
                         return proxy;
                 }
 
+                // 缓存中不存在，设置生成 TccProxy 代码标记。创建中时，其他创建请求等待，避免并发
                 if (value == PendingGenerationMarker) {
                     try {
                         cache.wait();
@@ -133,12 +138,15 @@ public abstract class TccProxy {
         String pkg = null;
         TccClassGenerator ccp = null, ccm = null;
         try {
+            // 创建 Tcc class 代码生成器
             ccp = TccClassGenerator.newInstance(cl);
 
-            Set<String> worked = new HashSet<String>();
-            List<Method> methods = new ArrayList<Method>();
+            Set<String> worked = new HashSet<String>();     // 已处理方法签名集合。key：方法签名
+            List<Method> methods = new ArrayList<Method>(); // 已处理方法集合。
 
+            // 处理接口
             for (int i = 0; i < ics.length; i++) {
+                // 非 public 接口，使用接口包名
                 if (!Modifier.isPublic(ics[i].getModifiers())) {
                     String npkg = ics[i].getPackage().getName();
                     if (pkg == null) {
@@ -148,14 +156,19 @@ public abstract class TccProxy {
                             throw new IllegalArgumentException("non-public interfaces from different packages");
                     }
                 }
+
+                // 添加接口
                 ccp.addInterface(ics[i]);
 
+                // 处理接口方法
                 for (Method method : ics[i].getMethods()) {
+                    // 添加方法签名到已处理方法签名集合
                     String desc = ReflectUtils.getDesc(method);
                     if (worked.contains(desc))
                         continue;
                     worked.add(desc);
 
+                    // 生成接口方法实现代码
                     int ix = methods.size();
                     Class<?> rt = method.getReturnType();
                     Class<?>[] pts = method.getParameterTypes();
@@ -171,6 +184,7 @@ public abstract class TccProxy {
 
                     StringBuilder compensableDesc = new StringBuilder();
 
+                    // 添加方法
                     Compensable compensable = method.getAnnotation(Compensable.class);
 
                     if (compensable != null) {
@@ -181,6 +195,7 @@ public abstract class TccProxy {
                 }
             }
 
+            // 设置包路径
             if (pkg == null)
                 pkg = PACKAGE_NAME;
 
