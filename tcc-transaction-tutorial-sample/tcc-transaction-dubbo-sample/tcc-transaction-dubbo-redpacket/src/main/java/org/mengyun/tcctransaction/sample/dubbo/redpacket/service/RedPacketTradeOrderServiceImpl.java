@@ -79,6 +79,9 @@ public class RedPacketTradeOrderServiceImpl implements RedPacketTradeOrderServic
             throw new RuntimeException(e);
         }
 
+        // error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)
+        throw new RuntimeException("error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)");
+
         System.out.println("red packet confirm record called. time seq:" + DateFormatUtils.format(Calendar.getInstance(), "yyyy-MM-dd HH:mm:ss"));
 
         TradeOrder tradeOrder = tradeOrderRepository.findByMerchantOrderNo(tradeOrderDto.getMerchantOrderNo());
