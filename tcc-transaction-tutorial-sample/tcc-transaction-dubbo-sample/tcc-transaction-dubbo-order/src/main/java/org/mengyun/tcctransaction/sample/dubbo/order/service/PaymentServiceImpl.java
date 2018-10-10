@@ -47,6 +47,9 @@ public class PaymentServiceImpl {
 
         String result = capitalTradeOrderService.record(buildCapitalTradeOrderDto(order));
         String result2 = redPacketTradeOrderService.record(buildRedPacketTradeOrderDto(order));
+
+        // error1 红包账户冻结成功(try)、资金账户冻结成功(try)，订单操作异常(try)
+        throw new RuntimeException("error1 红包账户冻结成功(try)、资金账户冻结成功(try)，订单操作异常(try)");
     }
 
     public void confirmMakePayment(Order order, BigDecimal redPacketPayAmount, BigDecimal capitalPayAmount) {
