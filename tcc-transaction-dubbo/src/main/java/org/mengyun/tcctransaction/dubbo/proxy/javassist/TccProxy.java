@@ -202,14 +202,20 @@ public abstract class TccProxy {
             // create ProxyInstance class.
             String pcn = pkg + ".proxy" + id;
             ccp.setClassName(pcn);
+            // 添加静态 methods
             ccp.addField("public static java.lang.reflect.Method[] methods;");
             ccp.addField("private " + InvocationHandler.class.getName() + " handler;");
+            // 添加参数为handler的构造方法
             ccp.addConstructor(Modifier.PUBLIC, new Class<?>[]{InvocationHandler.class}, new Class<?>[0], "handler=$1;");
+            // 添加默认空构造方法
             ccp.addDefaultConstructor();
+            // 生成类
             Class<?> clazz = ccp.toClass();
+            // 设置静态属性 methods
             clazz.getField("methods").set(null, methods.toArray(new Method[0]));
 
             // create TccProxy class.
+            // 生成 Dubbo Service 调用 Proxy 工厂的代码。
             String fcn = TccProxy.class.getName() + id;
             ccm = TccClassGenerator.newInstance(cl);
             ccm.setClassName(fcn);
