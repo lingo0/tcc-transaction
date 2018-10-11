@@ -67,6 +67,9 @@ public class PaymentServiceImpl {
             order.confirm();
             orderRepository.updateOrder(order);
         }
+
+        // error3 资金账户冻结成功(try)，红包账户冻结成功(try)，订单处理失败(confirm)
+        throw new RuntimeException("error3 资金账户冻结成功(try)，红包账户冻结成功(try)，订单处理失败(confirm)");
     }
 
     public void cancelMakePayment(Order order, BigDecimal redPacketPayAmount, BigDecimal capitalPayAmount) {
