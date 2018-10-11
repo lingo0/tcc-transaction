@@ -49,6 +49,7 @@ public class PaymentServiceImpl {
         String result2 = redPacketTradeOrderService.record(buildRedPacketTradeOrderDto(order));
 
         // error1 红包账户冻结成功(try)、资金账户冻结成功(try)，订单操作异常(try)
+        // error4 在第一种情况下，订单cancel操作处理失败(cancel)
         throw new RuntimeException("error1 红包账户冻结成功(try)、资金账户冻结成功(try)，订单操作异常(try)");
     }
 
@@ -89,6 +90,9 @@ public class PaymentServiceImpl {
             order.cancelPayment();
             orderRepository.updateOrder(order);
         }
+
+        // error4 在第一种情况下，订单cancel操作处理失败(cancel)
+        throw new RuntimeException("error4 在第一种情况下，订单cancel操作处理失败(cancel)");
     }
 
 
