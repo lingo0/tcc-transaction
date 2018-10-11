@@ -51,7 +51,7 @@ public class CompensableMethodUtils {
             return MethodType.ROOT;
         } else if (
                 // 事务传播级别为 Propagation.REQUIRED，并且当前不存在事务，并且方法参数传递了事务上下文。
-                // 事务传播级别为 Propagation.PROVIDER，并且当前不存在事务，并且方法参数传递了事务上下文。
+                // 事务传播级别为 Propagation.MANDATORY，并且当前不存在事务，并且方法参数传递了事务上下文。
                 (propagation.equals(Propagation.REQUIRED) || propagation.equals(Propagation.MANDATORY))
                    && !isTransactionActive && transactionContext != null) {
             return MethodType.PROVIDER;

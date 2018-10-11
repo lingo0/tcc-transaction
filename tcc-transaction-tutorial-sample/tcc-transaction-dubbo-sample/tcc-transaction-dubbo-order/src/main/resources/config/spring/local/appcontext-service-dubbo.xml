@@ -24,6 +24,8 @@
 
     <!--<dubbo:consumer proxy="javassist" />-->
 
+    <dubbo:consumer timeout="500000" />
+
     <dubbo:reference id="captialTradeOrderService"
                      interface="org.mengyun.tcctransaction.sample.dubbo.capital.api.CapitalTradeOrderService"
                      timeout="5000"/>
