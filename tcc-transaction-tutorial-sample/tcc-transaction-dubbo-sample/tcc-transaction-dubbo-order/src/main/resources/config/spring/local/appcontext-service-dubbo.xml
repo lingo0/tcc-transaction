@@ -14,6 +14,8 @@
 
     <!--<dubbo:registry id="capitalRpcZk" address="multicast://224.5.6.7:1234?unicast=false"/>-->
 
+    <dubbo:consumer timeout="50000000"/>
+
     <dubbo:application name="sample-dubbo-order"/>
 
     <dubbo:registry protocol="zookeeper" address="${zookeeper.address}"

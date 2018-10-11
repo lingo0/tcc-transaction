@@ -74,13 +74,10 @@ public class RedPacketTradeOrderServiceImpl implements RedPacketTradeOrderServic
     public void confirmRecord(RedPacketTradeOrderDto tradeOrderDto) {
 
         try {
-            Thread.sleep(1000l);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        // error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)
-        throw new RuntimeException("error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)");
 
         System.out.println("red packet confirm record called. time seq:" + DateFormatUtils.format(Calendar.getInstance(), "yyyy-MM-dd HH:mm:ss"));
 
@@ -97,6 +94,10 @@ public class RedPacketTradeOrderServiceImpl implements RedPacketTradeOrderServic
 
             redPacketAccountRepository.save(transferToAccount);
         }
+
+        // error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)
+//        throw new RuntimeException("error2 订单处理成功(confirm)，资金账户扣减成功(confirm)，但红包账户扣减失败(confirm)");
+
     }
 
     @Transactional
