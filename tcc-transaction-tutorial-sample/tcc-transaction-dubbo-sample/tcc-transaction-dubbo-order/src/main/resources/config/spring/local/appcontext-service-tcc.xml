@@ -6,7 +6,7 @@
     <bean class="org.mengyun.tcctransaction.spring.recover.DefaultRecoverConfig">
         <property name="maxRetryCount" value="30"/>
         <property name="recoverDuration" value="60"/>
-        <property name="cronExpression" value="0/30 * * * * ?"/>
+        <property name="cronExpression" value="0/10 * * * * ?"/>
         <property name="delayCancelExceptions">
             <util:set>
                 <value>com.alibaba.dubbo.remoting.TimeoutException</value>

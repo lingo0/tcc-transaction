@@ -116,8 +116,8 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
 
             StringBuilder builder = new StringBuilder();
             builder.append("UPDATE " + getTableName() + " SET " +
-                    "CONTENT = ?,STATUS = ?,LAST_UPDATE_TIME = ?, RETRIED_COUNT = ?,VERSION = VERSION+1 WHERE IS_DELETE = 0 " +
-                           "AND GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ? AND VERSION = ?");
+                    "CONTENT = ?,STATUS = ?,LAST_UPDATE_TIME = ?, RETRIED_COUNT = ?,VERSION = VERSION+1 WHERE " +
+                           "IS_DELETE = 0 AND GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ? AND VERSION = ?");
 
             builder.append(StringUtils.isNotEmpty(domain) ? " AND DOMAIN = ?" : "");
 
@@ -267,6 +267,8 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
             }
 
             builder.append(StringUtils.isNotEmpty(domain) ? " AND DOMAIN = ?" : "");
+
+            builder.append(" AND IS_DELETE = 0");
 
             stmt = connection.prepareStatement(builder.toString());
 
