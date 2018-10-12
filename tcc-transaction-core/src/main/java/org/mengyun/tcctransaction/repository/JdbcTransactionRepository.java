@@ -116,7 +116,8 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
 
             StringBuilder builder = new StringBuilder();
             builder.append("UPDATE " + getTableName() + " SET " +
-                    "CONTENT = ?,STATUS = ?,LAST_UPDATE_TIME = ?, RETRIED_COUNT = ?,VERSION = VERSION+1 WHERE GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ? AND VERSION = ?");
+                    "CONTENT = ?,STATUS = ?,LAST_UPDATE_TIME = ?, RETRIED_COUNT = ?,VERSION = VERSION+1 WHERE IS_DELETE = 0 " +
+                           "AND GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ? AND VERSION = ?");
 
             builder.append(StringUtils.isNotEmpty(domain) ? " AND DOMAIN = ?" : "");
 
@@ -152,13 +153,19 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
     protected int doDelete(Transaction transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
+        long currentVersion = transaction.getVersion();
 
         try {
             connection = this.getConnection();
 
             StringBuilder builder = new StringBuilder();
-            builder.append("DELETE FROM " + getTableName() +
-                    " WHERE GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ?");
+//            builder.append("DELETE FROM " + getTableName() +
+//                    " WHERE GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ?");
+
+            builder.append("UPDATE " + getTableName() + " SET " +
+                           "IS_DELETE = 1, VERSION = VERSION + 1 " +
+                           "WHERE GLOBAL_TX_ID = ? AND BRANCH_QUALIFIER = ? AND VERSION = ?");
+
 
             builder.append(StringUtils.isNotEmpty(domain) ? " AND DOMAIN = ?" : "");
 
@@ -166,9 +173,10 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
 
             stmt.setBytes(1, transaction.getXid().getGlobalTransactionId());
             stmt.setBytes(2, transaction.getXid().getBranchQualifier());
+            stmt.setLong(3, currentVersion);
 
             if (StringUtils.isNotEmpty(domain)) {
-                stmt.setString(3, domain);
+                stmt.setString(4, domain);
             }
 
             return stmt.executeUpdate();
@@ -207,7 +215,7 @@ public class JdbcTransactionRepository extends CachableTransactionRepository {
             builder.append("SELECT GLOBAL_TX_ID, BRANCH_QUALIFIER, CONTENT,STATUS,TRANSACTION_TYPE,CREATE_TIME,LAST_UPDATE_TIME,RETRIED_COUNT,VERSION");
             builder.append(StringUtils.isNotEmpty(domain) ? ",DOMAIN" : "");
             builder.append("  FROM " + getTableName() + " WHERE LAST_UPDATE_TIME < ?");
-//            builder.append(" AND IS_DELETE = 0 ");
+            builder.append(" AND IS_DELETE = 0 ");
             builder.append(StringUtils.isNotEmpty(domain) ? " AND DOMAIN = ?" : "");
 
             stmt = connection.prepareStatement(builder.toString());
