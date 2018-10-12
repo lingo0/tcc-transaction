@@ -47,7 +47,7 @@ public class ResourceCoordinatorInterceptor {
             }
         }
 
-        // 执行方法原逻辑
+        // 执行方法
         return pjp.proceed(pjp.getArgs());
     }
 
@@ -69,6 +69,7 @@ public class ResourceCoordinatorInterceptor {
         // 创建 事务编号
         TransactionXid xid = new TransactionXid(transaction.getXid().getGlobalTransactionId());
 
+        // 设置 事务上下文
         if (FactoryBuilder.factoryOf(compensable.transactionContextEditor()).getInstance().get(pjp.getTarget(), method, pjp.getArgs()) == null) {
             FactoryBuilder.factoryOf(compensable.transactionContextEditor()).getInstance().set(new TransactionContext(xid, TransactionStatus.TRYING.getId()), pjp.getTarget(), ((MethodSignature) pjp.getSignature()).getMethod(), pjp.getArgs());
         }

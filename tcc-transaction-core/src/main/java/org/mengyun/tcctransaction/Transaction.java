@@ -111,7 +111,7 @@ public class Transaction implements Serializable {
      * 提交 TCC 事务
      */
     public void commit() {
-
+        // 循环对参与者进行提交
         for (Participant participant : participants) {
             participant.commit();
         }
@@ -121,6 +121,7 @@ public class Transaction implements Serializable {
      * 回滚 TCC 事务
      */
     public void rollback() {
+        // 循环对参与者进行回滚
         for (Participant participant : participants) {
             participant.rollback();
         }

@@ -73,8 +73,10 @@ public class TransactionRecovery {
 
             // Confirm / Cancel
             try {
+                // 增加重试次数
                 transaction.addRetriedCount();
 
+                // 如果事务状态是 confirm ,则重试commit
                 if (transaction.getStatus().equals(TransactionStatus.CONFIRMING)) {
 
                     transaction.changeStatus(TransactionStatus.CONFIRMING);

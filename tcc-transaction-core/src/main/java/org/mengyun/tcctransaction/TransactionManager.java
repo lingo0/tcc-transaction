@@ -43,7 +43,7 @@ public class TransactionManager {
 
         // 创建 根事务
         Transaction transaction = new Transaction(TransactionType.ROOT);
-        // 存储 事务
+        // 持久化 事务
         transactionRepository.create(transaction);
         // 注册事务
         registerTransaction(transaction);

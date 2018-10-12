@@ -276,7 +276,7 @@ public final class TccClassGenerator {
      * @return
      */
     public Class<?> toClass() {
-        // mCtc 非空时，进行释放；下面会进行创建 mCtc
+        // mCtc 非空时，进行释放；下面会进行创建  mCtc --- 动态生成的类
         if (mCtc != null)
             mCtc.detach();
         long id = CLASS_NAME_COUNTER.getAndIncrement();

@@ -136,6 +136,7 @@ public abstract class TccProxy {
 
         long id = PROXY_CLASS_COUNTER.getAndIncrement();
         String pkg = null;
+        // 主要流程
         TccClassGenerator ccp = null, ccm = null;
         try {
             // 创建 Tcc class 代码生成器
@@ -187,6 +188,7 @@ public abstract class TccProxy {
                     // 添加方法
                     Compensable compensable = method.getAnnotation(Compensable.class);
 
+                    // 如果是@Compensable方法,则会加入compensableMethods存储,在toClass中会对应补全代码
                     if (compensable != null) {
                         ccp.addMethod(true, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                     } else {
@@ -209,13 +211,13 @@ public abstract class TccProxy {
             ccp.addConstructor(Modifier.PUBLIC, new Class<?>[]{InvocationHandler.class}, new Class<?>[0], "handler=$1;");
             // 添加默认空构造方法
             ccp.addDefaultConstructor();
-            // 生成类
+            // 生成类---重点
             Class<?> clazz = ccp.toClass();
             // 设置静态属性 methods
             clazz.getField("methods").set(null, methods.toArray(new Method[0]));
 
             // create TccProxy class.
-            // 生成 Dubbo Service 调用 Proxy 工厂的代码。
+            // 生成 Dubbo Service 调用代码。
             String fcn = TccProxy.class.getName() + id;
             ccm = TccClassGenerator.newInstance(cl);
             ccm.setClassName(fcn);

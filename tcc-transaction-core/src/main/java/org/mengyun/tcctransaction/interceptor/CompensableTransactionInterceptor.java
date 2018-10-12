@@ -97,6 +97,7 @@ public class CompensableTransactionInterceptor {
 
             // 执行方法原逻辑
             try {
+                // 有第二个切面拦截器
                 returnValue = pjp.proceed();
             } catch (Throwable tryingException) {
 
