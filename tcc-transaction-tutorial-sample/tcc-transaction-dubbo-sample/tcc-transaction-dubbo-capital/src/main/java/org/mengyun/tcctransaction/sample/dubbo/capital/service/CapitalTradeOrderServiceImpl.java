@@ -70,8 +70,8 @@ public class CapitalTradeOrderServiceImpl implements CapitalTradeOrderService {
         }
 
         // error1-2 远程try调用异常
-        Integer i = null;
-        i.equals(1);
+//        Integer i = null;
+//        i.equals(1);
 
         return "success";
     }
